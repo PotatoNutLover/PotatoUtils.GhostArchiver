@@ -1,0 +1,86 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "PotatoUtils.GhostArchiver.App/1.0.0": {
+        "dependencies": {
+          "PotatoUtils.GhostArchiver.Core": "1.0.0",
+          "PotatoUtils.Logger": "1.0.0.0"
+        },
+        "runtime": {
+          "PotatoUtils.GhostArchiver.App.dll": {}
+        }
+      },
+      "SharpCompress/0.34.0": {
+        "dependencies": {
+          "ZstdSharp.Port": "0.6.1"
+        },
+        "runtime": {
+          "lib/net6.0/SharpCompress.dll": {
+            "assemblyVersion": "0.34.0.0",
+            "fileVersion": "0.34.0.0"
+          }
+        }
+      },
+      "ZstdSharp.Port/0.6.1": {
+        "runtime": {
+          "lib/net6.0/ZstdSharp.dll": {
+            "assemblyVersion": "0.6.1.0",
+            "fileVersion": "0.6.1.0"
+          }
+        }
+      },
+      "PotatoUtils.GhostArchiver.Core/1.0.0": {
+        "dependencies": {
+          "SharpCompress": "0.34.0"
+        },
+        "runtime": {
+          "PotatoUtils.GhostArchiver.Core.dll": {}
+        }
+      },
+      "PotatoUtils.Logger/1.0.0.0": {
+        "runtime": {
+          "PotatoUtils.Logger.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PotatoUtils.GhostArchiver.App/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SharpCompress/0.34.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hC1UOh6rIOOYZc+TKCTtPWF4n/vsJTLise78WGG9vfPICSUOyawNqjFHpzy6kFSXH7uzKd7QFT9VNeP3Q8XOJg==",
+      "path": "sharpcompress/0.34.0",
+      "hashPath": "sharpcompress.0.34.0.nupkg.sha512"
+    },
+    "ZstdSharp.Port/0.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KZjt1x8ioy16iuFIBbNq7Sv9nAXU4k5DVSPB4cP69qaAnEeO/ru7MwfvAXHTfFKJTipOgHtvolL+QMRiYGGxkw==",
+      "path": "zstdsharp.port/0.6.1",
+      "hashPath": "zstdsharp.port.0.6.1.nupkg.sha512"
+    },
+    "PotatoUtils.GhostArchiver.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PotatoUtils.Logger/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
