@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PotatoUtils.GhostArchiver.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PotatoUtils.GhostArchiver.App", "PotatoUtils.GhostArchiver.App\PotatoUtils.GhostArchiver.App.csproj", "{770E8E87-0BB4-4F75-BE78-0CAD20FC648F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D885BC81-D1FD-4EF6-BB5E-922B88F4E0B9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GhostArchiver", "GhostArchiver", "{7E918AB0-CC02-4D71-B7A9-8BB56E746FEB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7E918AB0-CC02-4D71-B7A9-8BB56E746FEB} = {D885BC81-D1FD-4EF6-BB5E-922B88F4E0B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15BF68C4-4823-40B3-BE93-4E4F88636812}
