@@ -67,11 +67,16 @@ namespace PotatoUtils.GhostArchiver.Core
                     Archivate();
                     return;
                 }
-                catch
+                catch (IOException exception)
                 {
-                    PLogger.Log($"Attempt {counter}. File ({_filePath}\\{_fileName}) is busy by antoher process, process falls asleep for 1 second");
+                    PLogger.Log($"Attempt {counter}. File ({_filePath}\\{_fileName}) is busy by antoher process, process falls asleep for {_attemptDelaySec} second");
                     Thread.Sleep((int)(_attemptDelaySec * 1000));
                     continue;
+                }
+                catch (Exception exception)
+                {
+                    PLogger.LogException(exception.Message);
+                    PLogger.Log("Stop archiving process");
                 }
             }
 
@@ -80,8 +85,11 @@ namespace PotatoUtils.GhostArchiver.Core
 
         private void Archivate()
         {
-            if (IsFileSizeValid(_filePath + "\\" + _fileName) == false)
-                return;
+            string path = _filePath + "\\" + _fileName;
+
+            if (IsFileSizeValid(path) == false)
+                if (TryAwaitFileSizeIncrease(path) == false)
+                    return;
 
             using (var archive = ZipArchive.Create())
             {
@@ -91,22 +99,63 @@ namespace PotatoUtils.GhostArchiver.Core
             }
         }
 
+        private bool TryAwaitFileSizeIncrease(string path)
+        {
+            PLogger.Log($"Try await file({_fileName}) size increase");
+            long firstFileSizeShot = 0;
+            long secondFileSizeShot = 0;
+            int counter = 0;
+
+            while (true)
+            {
+                firstFileSizeShot = GetFileSize(path);
+                PLogger.Log($"Current file ({_fileName}) size: {firstFileSizeShot}");
+                Thread.Sleep((int)(_attemptDelaySec * 1000));
+                secondFileSizeShot = GetFileSize(path);
+                PLogger.Log($"Current file ({_fileName}) size: {secondFileSizeShot}");
+                counter++;
+                if (IsFileSizeValid(path))
+                {
+                    PLogger.Log($"Current file ({_fileName}) size is valid.");
+                    return true;
+                }
+                else if (firstFileSizeShot >= secondFileSizeShot)
+                {
+                    PLogger.Log($"Current file ({_fileName}) size is not valid. Archive process cancelled. {counter} Attempts.");
+                    return false;
+                }
+                else if (counter >= _archiveAttempts)
+                {
+                    PLogger.Log($"Current file ({_fileName}) size is not valid. Archive process cancelled. {counter} Attempts.");
+                    return false;
+                }
+            }
+        }
+
         private bool IsFileSizeValid(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open))
+            using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 stream.ReadByte();
                 stream.Close();
             }
 
-            System.IO.FileInfo info = new System.IO.FileInfo(path);
-            if (info.Length < _minSize)
+            //File.Move(path, path);
+
+            long size = GetFileSize(path);
+            if (size < _minSize)
             {
-                PLogger.Log($"File {_fileName} size is smaller ({info.Length}) than minimal size ({_minSize}). Archiving cancelled.");
+                PLogger.Log($"File {_fileName} size is smaller ({size}) than minimal size ({_minSize}).");
                 return false;
             }
 
             return true;
+        }
+
+        private long GetFileSize(string path)
+        {
+            System.IO.FileInfo info = new System.IO.FileInfo(path);
+            return info.Length;
         }
     }
 }
