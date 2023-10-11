@@ -28,28 +28,41 @@ namespace PotatoUtils.GhostArchiver.App
             if (File.Exists(_configurationFilePath) == false)
                 CreateFile();
             else
-                ReadFile();
+                _configuration = ReadFile();
         }
 
-        private void ReadFile()
+        public Configuration ReadFile()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
+
+            try
+            {
+                using (FileStream stream = new FileStream(_configurationFilePath, FileMode.OpenOrCreate))
+                {
+                    return (Configuration)serializer.Deserialize(stream);
+                }
+            }
+            catch
+            {
+                CreateFile();
+                return _configuration;
+            }
+        }
+
+        public void WriteFile(Configuration configuration)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
 
             using (FileStream stream = new FileStream(_configurationFilePath, FileMode.OpenOrCreate))
             {
-                _configuration = (Configuration)serializer.Deserialize(stream);
+                serializer.Serialize(stream, configuration);
             }
         }
 
         private void CreateFile()
         {
             _configuration = _configFactory.GetConfig();
-            XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
-
-            using (FileStream stream = new FileStream(_configurationFilePath, FileMode.OpenOrCreate))
-            {
-                serializer.Serialize(stream, _configuration);
-            }
+            WriteFile(_configuration);
         }
     }
 }

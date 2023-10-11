@@ -8,7 +8,10 @@ namespace PotatoUtils.GhostArchiver.Core
 {
     public interface IArchiveProcessor
     {
-        public void StartProcess(string fileName, string filePath);
+        public delegate void ArchivingSession(int sessionId, IArchiveProcessor processor);
+        public event ArchivingSession ArchivingSessionCompleted;
+
+        public void StartProcess(int sessionId, string fileName, string filePath);
         public IArchiveProcessor Clone();
         public IArchiveProcessor Clone(int archiveAttempts, float attemptDelaySec, int minSize); 
     }

@@ -57,7 +57,7 @@ namespace PotatoUtils.GhostArchiver.App
         private void button_Start_Click(object sender, EventArgs e)
         {
             if (TryLoadConfig())
-                if(TryInitializeArchiver())
+                if (TryInitializeArchiver())
                 {
                     button_Start.Enabled = false;
                     button_Start.Text = "Started";
@@ -104,7 +104,7 @@ namespace PotatoUtils.GhostArchiver.App
             {
                 InitializeArchiver();
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 PLogger.LogException(exception.Message);
                 return false;
@@ -131,7 +131,7 @@ namespace PotatoUtils.GhostArchiver.App
             PLogger.Log("Init finished.\r\n");
         }
 
-        private void button_openConfig_Click(object sender, EventArgs e)
+        private void button_openConfigFile_Click(object sender, EventArgs e)
         {
             try
             {
@@ -155,6 +155,11 @@ namespace PotatoUtils.GhostArchiver.App
         {
             if (textBox1.Text.Length > 0)
                 Clipboard.SetText(textBox1.Text);
+        }
+
+        private void button_openConfig_Click(object sender, EventArgs e)
+        {
+            new ConfigurationForm(ConfigurationFilePath).ShowDialog();
         }
     }
 }

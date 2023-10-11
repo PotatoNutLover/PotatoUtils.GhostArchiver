@@ -12,6 +12,8 @@ namespace PotatoUtils.GhostArchiver.Core
 {
     public class ZipArchiveProcessor : IArchiveProcessor
     {
+        public event IArchiveProcessor.ArchivingSession ArchivingSessionCompleted;
+
         private const int DefaultArchiveAttempts = 20;
         private const float DefaultAttemptDelaySec = 1.0f;
         private const int DefaultMinSize = 0;
@@ -19,7 +21,8 @@ namespace PotatoUtils.GhostArchiver.Core
         private readonly int _archiveAttempts;
         private readonly float _attemptDelaySec;
         private readonly int _minSize;
-
+        
+        private int _sessionId;
         private string _fileName;
         private string _filePath;
 
@@ -37,11 +40,12 @@ namespace PotatoUtils.GhostArchiver.Core
             _minSize = minSize;
         }
 
-        public void StartProcess(string fileName, string filePath)
+        public void StartProcess(int sessionId, string fileName, string filePath)
         {
             PLogger.Log($"Start archiving process {_fileName}");
             _fileName = fileName;
             _filePath = filePath;
+            _sessionId = sessionId;
 
             Thread thread = new Thread(StartArchivateCycle);
             thread.Start();
@@ -65,6 +69,7 @@ namespace PotatoUtils.GhostArchiver.Core
                 try
                 {
                     Archivate();
+                    ArchivingSessionCompleted?.Invoke(_sessionId, this);
                     return;
                 }
                 catch (IOException exception)
@@ -81,6 +86,7 @@ namespace PotatoUtils.GhostArchiver.Core
             }
 
             PLogger.Log($"Failed to archive file {_fileName} by {counter} attempts");
+            ArchivingSessionCompleted?.Invoke(_sessionId, this);
         }
 
         private void Archivate()
@@ -139,8 +145,6 @@ namespace PotatoUtils.GhostArchiver.Core
                 stream.ReadByte();
                 stream.Close();
             }
-
-            //File.Move(path, path);
 
             long size = GetFileSize(path);
             if (size < _minSize)

@@ -15,6 +15,7 @@ namespace PotatoUtils.GhostArchiver.Core
         private readonly FileSystemWatcher _watcher;
         private readonly int _archiveAttempts;
         private readonly float _attemptDelaySec;
+        private readonly FileIdentityStorage _fileIdentityStorage;
 
         private FileInfo _fileInfo;
         private IArchiveProcessor _archiveProcessor;
@@ -44,6 +45,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo)
         {
+            _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = 20;
             _attemptDelaySec = 1f;
@@ -52,6 +54,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo, int archiveAttempts, float attemptDelaySec)
         {
+            _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = archiveAttempts;
             _attemptDelaySec = attemptDelaySec;
@@ -60,6 +63,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo, IArchiveProcessor archiver, INotifyFilter notifyFilter, int archiveAttempts, float attemptDelaySec)
         {
+            _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = archiveAttempts;
             _attemptDelaySec = attemptDelaySec;
@@ -97,7 +101,25 @@ namespace PotatoUtils.GhostArchiver.Core
         private void OnCreated(object source, FileSystemEventArgs e)
         {
             PLogger.Log($"File created ({e.FullPath})");
-            _archiveProcessor.Clone(_archiveAttempts, _attemptDelaySec, _fileInfo.MinSize).StartProcess(e.Name, _fileInfo.Path);
+            try
+            {
+                int sessionId = _fileIdentityStorage.AddFileAndGetSessionId(e.Name, _fileInfo.Path);
+                IArchiveProcessor processor = _archiveProcessor.Clone(_archiveAttempts, _attemptDelaySec, _fileInfo.MinSize);
+                PLogger.Log($"Session id:{sessionId} created.");
+                processor.ArchivingSessionCompleted += DropSession;
+                processor.StartProcess(sessionId, e.Name, _fileInfo.Path);
+            }
+            catch (Exception ex)
+            {
+                PLogger.LogException(ex.Message);
+            }
+        }
+
+        public void DropSession(int sessionId, IArchiveProcessor processor)
+        {
+            _fileIdentityStorage.DropFile(sessionId);
+            PLogger.Log($"Session id:{sessionId} dropped.");
+            processor.ArchivingSessionCompleted -= DropSession;
         }
 
         private void OnOutputMessageLogged(string message)
