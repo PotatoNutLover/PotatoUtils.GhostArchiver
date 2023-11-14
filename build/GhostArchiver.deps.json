@@ -6,13 +6,13 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "PotatoUtils.GhostArchiver.App/1.0.0": {
+      "GhostArchiver/1.0.0": {
         "dependencies": {
           "PotatoUtils.GhostArchiver.Core": "1.0.0",
           "PotatoUtils.Logger": "1.0.0.0"
         },
         "runtime": {
-          "PotatoUtils.GhostArchiver.App.dll": {}
+          "GhostArchiver.dll": {}
         }
       },
       "SharpCompress/0.34.0": {
@@ -53,7 +53,7 @@
     }
   },
   "libraries": {
-    "PotatoUtils.GhostArchiver.App/1.0.0": {
+    "GhostArchiver/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
