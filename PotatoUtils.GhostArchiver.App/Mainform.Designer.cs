@@ -113,6 +113,7 @@
             Controls.Add(textBox1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "MainForm";
             Text = "GhostArchiver by @nuttlover";
             Load += Form1_Load;
