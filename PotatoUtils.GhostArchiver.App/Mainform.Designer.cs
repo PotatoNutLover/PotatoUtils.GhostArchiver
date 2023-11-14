@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             textBox1 = new TextBox();
             button_Start = new Button();
             button_copyLog = new Button();
             button_openConfigFile = new Button();
             button_openConfig = new Button();
+            button_Abort = new Button();
             SuspendLayout();
             // 
             // textBox1
@@ -78,7 +80,7 @@
             // 
             // button_openConfig
             // 
-            button_openConfig.Location = new Point(93, 244);
+            button_openConfig.Location = new Point(229, 244);
             button_openConfig.Name = "button_openConfig";
             button_openConfig.Size = new Size(83, 23);
             button_openConfig.TabIndex = 8;
@@ -86,18 +88,31 @@
             button_openConfig.UseVisualStyleBackColor = true;
             button_openConfig.Click += button_openConfig_Click;
             // 
+            // button_Abort
+            // 
+            button_Abort.Enabled = false;
+            button_Abort.Location = new Point(93, 244);
+            button_Abort.Name = "button_Abort";
+            button_Abort.Size = new Size(75, 23);
+            button_Abort.TabIndex = 9;
+            button_Abort.Text = "Abort";
+            button_Abort.UseVisualStyleBackColor = true;
+            button_Abort.Click += button_Abort_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.InactiveCaption;
             ClientSize = new Size(514, 273);
+            Controls.Add(button_Abort);
             Controls.Add(button_openConfig);
             Controls.Add(button_openConfigFile);
             Controls.Add(button_copyLog);
             Controls.Add(button_Start);
             Controls.Add(textBox1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "GhostArchiver by @nuttlover";
             Load += Form1_Load;
@@ -112,5 +127,6 @@
         private Button button_copyLog;
         private Button button_openConfigFile;
         private Button button_openConfig;
+        private Button button_Abort;
     }
 }

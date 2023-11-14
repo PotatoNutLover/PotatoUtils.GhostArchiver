@@ -53,7 +53,8 @@ namespace PotatoUtils.GhostArchiver.App
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Configuration));
 
-            using (FileStream stream = new FileStream(_configurationFilePath, FileMode.OpenOrCreate))
+
+            using (FileStream stream = new FileStream(_configurationFilePath, FileMode.Create))
             {
                 serializer.Serialize(stream, configuration);
             }

@@ -6,7 +6,13 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>folder2.ico</ApplicationIcon>
+    <AssemblyName>GhostArchiver</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="folder2.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PotatoUtils.GhostArchiver.Core\PotatoUtils.GhostArchiver.Core.csproj" />

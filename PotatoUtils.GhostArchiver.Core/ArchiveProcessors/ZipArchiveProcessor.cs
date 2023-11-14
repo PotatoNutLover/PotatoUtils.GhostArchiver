@@ -22,9 +22,10 @@ namespace PotatoUtils.GhostArchiver.Core
         private readonly float _attemptDelaySec;
         private readonly int _minSize;
         
-        private int _sessionId;
+        int _sessionId;
         private string _fileName;
         private string _filePath;
+        private bool _disposed = false;
 
         public ZipArchiveProcessor()
         {
@@ -42,6 +43,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public void StartProcess(int sessionId, string fileName, string filePath)
         {
+            _disposed = false;
             PLogger.Log($"Start archiving process {_fileName}");
             _fileName = fileName;
             _filePath = filePath;
@@ -49,6 +51,13 @@ namespace PotatoUtils.GhostArchiver.Core
 
             Thread thread = new Thread(StartArchivateCycle);
             thread.Start();
+        }
+
+        public void DropActiveProcess()
+        {
+            _disposed = true;
+            PLogger.Log($"Archiving process id {_sessionId} aborted.");
+            ArchivingSessionCompleted?.Invoke(_sessionId, this);
         }
 
         public IArchiveProcessor Clone()
@@ -66,6 +75,8 @@ namespace PotatoUtils.GhostArchiver.Core
             int counter = 0;
             for (counter = 0; counter < _archiveAttempts; counter++)
             {
+                if (_disposed == true)
+                    return;
                 try
                 {
                     Archivate();

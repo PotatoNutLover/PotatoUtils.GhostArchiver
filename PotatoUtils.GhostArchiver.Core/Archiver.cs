@@ -16,10 +16,12 @@ namespace PotatoUtils.GhostArchiver.Core
         private readonly int _archiveAttempts;
         private readonly float _attemptDelaySec;
         private readonly FileIdentityStorage _fileIdentityStorage;
+        private readonly List<IArchiveProcessor> _archiveProcessorsList;
 
         private FileInfo _fileInfo;
         private IArchiveProcessor _archiveProcessor;
         private INotifyFilter _notifyFilter;
+        private EventOutputStream _outputStream;
 
         public delegate void LogHandler (string message);
         public event LogHandler? OnMessageLogged;
@@ -45,6 +47,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo)
         {
+            _archiveProcessorsList = new List<IArchiveProcessor>();
             _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = 20;
@@ -54,6 +57,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo, int archiveAttempts, float attemptDelaySec)
         {
+            _archiveProcessorsList = new List<IArchiveProcessor>();
             _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = archiveAttempts;
@@ -63,6 +67,7 @@ namespace PotatoUtils.GhostArchiver.Core
 
         public Archiver(FileInfo fileInfo, IArchiveProcessor archiver, INotifyFilter notifyFilter, int archiveAttempts, float attemptDelaySec)
         {
+            _archiveProcessorsList = new List<IArchiveProcessor>();
             _fileIdentityStorage = new FileIdentityStorage(1000);
             _watcher = new FileSystemWatcher();
             _archiveAttempts = archiveAttempts;
@@ -89,13 +94,34 @@ namespace PotatoUtils.GhostArchiver.Core
             _watcher.EnableRaisingEvents = true;
         }
 
+        public void DropAllActiveProcesses()
+        {
+            int counter = 0;
+            foreach (IArchiveProcessor processor in _archiveProcessorsList)
+            {
+                try
+                {
+                    processor.DropActiveProcess();
+                    counter++;
+                }
+                catch(Exception ex)
+                {
+                    PLogger.LogException(ex.Message);
+                }
+            }
+            _archiveProcessorsList.Clear();
+            PLogger.Log($"Dropped {counter} processes.\r\n");
+            _outputStream.OnMessageLogged -= OnOutputMessageLogged;
+            _watcher.Created -= new FileSystemEventHandler(OnCreated);
+        }
+
         private void InitializeLogger()
         {
             PLogger.SetOutputExceptionFormat(new DefaultOutputExceptionFormat());
             PLogger.SetOutputFormat(new DefaultOutputFormat());
-            EventOutputStream outputStream = new EventOutputStream();
-            outputStream.OnMessageLogged += OnOutputMessageLogged;
-            PLogger.SetOutputStream(outputStream);
+            _outputStream = new EventOutputStream();
+            _outputStream.OnMessageLogged += OnOutputMessageLogged;
+            PLogger.SetOutputStream(_outputStream);
         }
 
         private void OnCreated(object source, FileSystemEventArgs e)
@@ -108,6 +134,7 @@ namespace PotatoUtils.GhostArchiver.Core
                 PLogger.Log($"Session id:{sessionId} created.");
                 processor.ArchivingSessionCompleted += DropSession;
                 processor.StartProcess(sessionId, e.Name, _fileInfo.Path);
+                _archiveProcessorsList.Add(processor);
             }
             catch (Exception ex)
             {
@@ -115,11 +142,12 @@ namespace PotatoUtils.GhostArchiver.Core
             }
         }
 
-        public void DropSession(int sessionId, IArchiveProcessor processor)
+        private void DropSession(int sessionId, IArchiveProcessor processor)
         {
             _fileIdentityStorage.DropFile(sessionId);
             PLogger.Log($"Session id:{sessionId} dropped.");
             processor.ArchivingSessionCompleted -= DropSession;
+            _archiveProcessorsList.Remove(processor);
         }
 
         private void OnOutputMessageLogged(string message)

@@ -12,6 +12,7 @@ namespace PotatoUtils.GhostArchiver.Core
         public event ArchivingSession ArchivingSessionCompleted;
 
         public void StartProcess(int sessionId, string fileName, string filePath);
+        public void DropActiveProcess();
         public IArchiveProcessor Clone();
         public IArchiveProcessor Clone(int archiveAttempts, float attemptDelaySec, int minSize); 
     }

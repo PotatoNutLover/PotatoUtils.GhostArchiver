@@ -16,6 +16,7 @@ namespace PotatoUtils.GhostArchiver.App
 
         private ConfigurationFile _configurationFile;
         private Archiver _archiver;
+        private EventOutputStream _outputStream;
 
         public MainForm()
         {
@@ -28,9 +29,9 @@ namespace PotatoUtils.GhostArchiver.App
         {
             PLogger.SetOutputExceptionFormat(new DefaultOutputExceptionFormat());
             PLogger.SetOutputFormat(new DefaultOutputFormat());
-            EventOutputStream outputStream = new EventOutputStream();
-            outputStream.OnMessageLogged += Log;
-            PLogger.SetOutputStream(outputStream);
+            _outputStream = new EventOutputStream();
+            _outputStream.OnMessageLogged += Log;
+            PLogger.SetOutputStream(_outputStream);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -60,6 +61,7 @@ namespace PotatoUtils.GhostArchiver.App
                 if (TryInitializeArchiver())
                 {
                     button_Start.Enabled = false;
+                    button_Abort.Enabled = true;
                     button_Start.Text = "Started";
                 }
         }
@@ -68,6 +70,7 @@ namespace PotatoUtils.GhostArchiver.App
         {
             try
             {
+                PLogger.Log($"Try load config. \r\n");
                 _configurationFile = new ConfigurationFile(ConfigurationFilePath, new DefaultConfigFactory());
                 return ValidateConfig();
             }
@@ -102,6 +105,7 @@ namespace PotatoUtils.GhostArchiver.App
         {
             try
             {
+                PLogger.Log($"Try init archiver. \r\n");
                 InitializeArchiver();
             }
             catch (Exception exception)
@@ -160,6 +164,27 @@ namespace PotatoUtils.GhostArchiver.App
         private void button_openConfig_Click(object sender, EventArgs e)
         {
             new ConfigurationForm(ConfigurationFilePath).ShowDialog();
+        }
+
+        private void button_Abort_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _archiver.DropAllActiveProcesses();
+                _archiver.OnMessageLogged -= Log;
+                _configurationFile = null;
+                _archiver = null;
+                GC.Collect();
+                button_Start.Enabled = true;
+                button_Abort.Enabled = false;
+                button_Start.Text = "Start";
+                PLogger.OutputStream = _outputStream;
+                PLogger.Log("Archiver stopped.");
+            }
+            catch (Exception ex)
+            {
+                PLogger.LogException(ex.Message);
+            }
         }
     }
 }

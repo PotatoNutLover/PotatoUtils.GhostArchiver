@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationForm));
             label1 = new Label();
             textBox_fileExtension = new TextBox();
             textBox_folderPath = new TextBox();
@@ -39,6 +40,7 @@
             textBox_attemptDelay = new TextBox();
             label5 = new Label();
             button_save = new Button();
+            button_openFolder = new Button();
             SuspendLayout();
             // 
             // label1
@@ -61,7 +63,7 @@
             // 
             textBox_folderPath.Location = new Point(12, 76);
             textBox_folderPath.Name = "textBox_folderPath";
-            textBox_folderPath.Size = new Size(257, 23);
+            textBox_folderPath.Size = new Size(217, 23);
             textBox_folderPath.TabIndex = 3;
             // 
             // label2
@@ -79,15 +81,16 @@
             textBox_minFileSize.Name = "textBox_minFileSize";
             textBox_minFileSize.Size = new Size(100, 23);
             textBox_minFileSize.TabIndex = 5;
+            textBox_minFileSize.TextChanged += textBox_minFileSize_TextChanged;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Location = new Point(12, 109);
             label3.Name = "label3";
-            label3.Size = new Size(131, 15);
+            label3.Size = new Size(142, 15);
             label3.TabIndex = 4;
-            label3.Text = "Minimal file size (bytes)";
+            label3.Text = "Minimal file size (Mbytes)";
             // 
             // textBox_attemtpsCount
             // 
@@ -111,6 +114,7 @@
             textBox_attemptDelay.Name = "textBox_attemptDelay";
             textBox_attemptDelay.Size = new Size(100, 23);
             textBox_attemptDelay.TabIndex = 9;
+            textBox_attemptDelay.TextChanged += textBox_attemptDelay_TextChanged;
             // 
             // label5
             // 
@@ -131,12 +135,23 @@
             button_save.UseVisualStyleBackColor = true;
             button_save.Click += button_save_Click;
             // 
+            // button_openFolder
+            // 
+            button_openFolder.Location = new Point(237, 76);
+            button_openFolder.Name = "button_openFolder";
+            button_openFolder.Size = new Size(39, 23);
+            button_openFolder.TabIndex = 11;
+            button_openFolder.Text = "...";
+            button_openFolder.UseVisualStyleBackColor = true;
+            button_openFolder.Click += button_openFolder_Click;
+            // 
             // ConfigurationForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.InactiveCaption;
             ClientSize = new Size(281, 286);
+            Controls.Add(button_openFolder);
             Controls.Add(button_save);
             Controls.Add(textBox_attemptDelay);
             Controls.Add(label5);
@@ -150,6 +165,7 @@
             Controls.Add(label1);
             ForeColor = SystemColors.ControlText;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ConfigurationForm";
             Text = "Configuration";
             ResumeLayout(false);
@@ -169,5 +185,6 @@
         private TextBox textBox_attemptDelay;
         private Label label5;
         private Button button_save;
+        private Button button_openFolder;
     }
 }
